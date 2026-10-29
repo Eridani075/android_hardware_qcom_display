@@ -1,0 +1,31 @@
+name: sync-upstream
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: uwu-24.0-caf-sm8150
+          fetch-depth: 0
+
+      - name: Rebase onto LineageOS lineage-24.0-caf-sm8150
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git remote add upstream https://github.com/LineageOS/android_hardware_qcom_display.git
+          git fetch upstream lineage-24.0-caf-sm8150
+          git rebase upstream/lineage-24.0-caf-sm8150
+          git push --force-with-lease origin HEAD:uwu-24.0-caf-sm8150
