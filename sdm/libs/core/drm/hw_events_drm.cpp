@@ -356,6 +356,13 @@ void *HWEventsDRM::DisplayEventHandler() {
         continue;
       }
 
+      if (poll_fd.revents & POLLNVAL) {
+        DLOGW("poll fd %d is no longer valid, disabling this event", poll_fd.fd);
+        poll_fd.fd = -1;
+        poll_fd.revents = 0;
+        continue;
+      }
+
       switch (event_data_list_[i].event_type) {
         case HWEvent::VSYNC:
         case HWEvent::PANEL_DEAD:
